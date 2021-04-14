@@ -25,20 +25,6 @@
  */
 package org.graalvm.compiler.asm.aarch64;
 
-import jdk.vm.ci.aarch64.AArch64;
-import jdk.vm.ci.aarch64.AArch64.CPUFeature;
-import jdk.vm.ci.aarch64.AArch64.Flag;
-import jdk.vm.ci.code.Register;
-import jdk.vm.ci.code.TargetDescription;
-import org.graalvm.compiler.asm.Assembler;
-import org.graalvm.compiler.asm.aarch64.AArch64Address.AddressingMode;
-import org.graalvm.compiler.core.common.NumUtil;
-import org.graalvm.compiler.debug.GraalError;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Arrays;
-
 import static jdk.vm.ci.aarch64.AArch64.CPU;
 import static jdk.vm.ci.aarch64.AArch64.SIMD;
 import static jdk.vm.ci.aarch64.AArch64.cpuRegisters;
@@ -141,6 +127,21 @@ import static org.graalvm.compiler.asm.aarch64.AArch64Assembler.InstructionType.
 import static org.graalvm.compiler.asm.aarch64.AArch64Assembler.InstructionType.General64;
 import static org.graalvm.compiler.asm.aarch64.AArch64Assembler.InstructionType.floatFromSize;
 import static org.graalvm.compiler.asm.aarch64.AArch64Assembler.InstructionType.generalFromSize;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+
+import org.graalvm.compiler.asm.Assembler;
+import org.graalvm.compiler.asm.aarch64.AArch64Address.AddressingMode;
+import org.graalvm.compiler.core.common.NumUtil;
+import org.graalvm.compiler.debug.GraalError;
+
+import jdk.vm.ci.aarch64.AArch64;
+import jdk.vm.ci.aarch64.AArch64.CPUFeature;
+import jdk.vm.ci.aarch64.AArch64.Flag;
+import jdk.vm.ci.code.Register;
+import jdk.vm.ci.code.TargetDescription;
 
 public abstract class AArch64Assembler extends Assembler {
 
@@ -658,7 +659,8 @@ public abstract class AArch64Assembler extends Assembler {
     }
 
     public enum DataCacheOperationType {
-        ZVA(0b011, 0b0100, 0b001);
+        ZVA(0b011, 0b0100, 0b001),
+        CVAP(0b011, 0b1100, 0b001);
 
         DataCacheOperationType(int op1, int crm, int op2) {
             this.op1 = op1;
@@ -815,6 +817,18 @@ public abstract class AArch64Assembler extends Assembler {
 
     public boolean supports(CPUFeature feature) {
         return ((AArch64) target.arch).getFeatures().contains(feature);
+    }
+
+    /**
+     * Determines if the CPU feature denoted by {@code name} is supported. This name based look up
+     * is for features only available in later JVMCI releases.
+     */
+    public final boolean supportsCPUFeature(String name) {
+        try {
+            return supports(CPUFeature.valueOf(name));
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public boolean isFlagSet(Flag flag) {

@@ -267,6 +267,18 @@ public abstract class AMD64BaseAssembler extends Assembler {
         return ((AMD64) target.arch).getFeatures().contains(feature);
     }
 
+    /**
+     * Determines if the CPU feature denoted by {@code name} is supported. This name based look up
+     * is for features only available in later JVMCI releases.
+     */
+    public final boolean supportsCPUFeature(String name) {
+        try {
+            return supports(CPUFeature.valueOf(name));
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     protected static boolean inRC(RegisterCategory rc, Register r) {
         return r.getRegisterCategory().equals(rc);
     }

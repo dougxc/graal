@@ -41,6 +41,7 @@ import static org.graalvm.compiler.asm.aarch64.AArch64Assembler.Instruction.STP;
 import org.graalvm.compiler.asm.BranchTargetOutOfBoundsException;
 import org.graalvm.compiler.asm.Label;
 import org.graalvm.compiler.asm.aarch64.AArch64ASIMDAssembler.ASIMDSize;
+import org.graalvm.compiler.asm.aarch64.AArch64Address.AddressingMode;
 import org.graalvm.compiler.asm.aarch64.AArch64MacroAssembler.MovSequenceAnnotation.MovAction;
 import org.graalvm.compiler.core.common.NumUtil;
 import org.graalvm.compiler.debug.GraalError;
@@ -2224,6 +2225,15 @@ public class AArch64MacroAssembler extends AArch64Assembler {
         neon.cntVV(ASIMDSize.HalfReg, vreg, vreg);
         neon.addvSV(ASIMDSize.HalfReg, AArch64ASIMDAssembler.ElementSize.Byte, vreg, vreg);
         neon.umovGX(AArch64ASIMDAssembler.ElementSize.DoubleWord, dst, vreg, 0);
+    }
+
+    public void cache_wb(AArch64Address line) {
+        assert supportsCPUFeature("DCPOP");
+        assert line.getAddressingMode() == AddressingMode.REGISTER_OFFSET : line;
+        assert line.getOffset() == Register.None : line;
+        assert line.getImmediate() == 0 : line;
+        // writeback using clear virtual address to point of persistence
+        dc(DataCacheOperationType.CVAP, line.getBase());
     }
 
     /**
