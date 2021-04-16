@@ -174,8 +174,14 @@ import sun.misc.Unsafe;
  */
 public class StandardGraphBuilderPlugins {
 
-    public static void registerInvocationPlugins(MetaAccessProvider metaAccess, SnippetReflectionProvider snippetReflection, InvocationPlugins plugins, Replacements replacements,
-                    boolean allowDeoptimization, boolean explicitUnsafeNullChecks, boolean arrayEqualsSubstitution, LoweringProvider lowerer) {
+    public static void registerInvocationPlugins(MetaAccessProvider metaAccess,
+                    SnippetReflectionProvider snippetReflection,
+                    InvocationPlugins plugins,
+                    Replacements replacements,
+                    boolean allowDeoptimization,
+                    boolean explicitUnsafeNullChecks,
+                    boolean arrayEqualsSubstitution,
+                    LoweringProvider lowerer) {
         registerObjectPlugins(plugins);
         registerClassPlugins(plugins);
         registerMathPlugins(plugins, allowDeoptimization, replacements, lowerer);
@@ -515,7 +521,9 @@ public class StandardGraphBuilderPlugins {
         if (!sunMiscUnsafe) {
             r.register2("getUncompressedObject", Receiver.class, long.class, new UnsafeGetPlugin(JavaKind.Object, explicitUnsafeNullChecks));
 
-            // Added by JEP 352.
+            // These methods are only called if
+            // jdk.internal.misc.UnsafeConstants.DATA_CACHE_LINE_FLUSH_SIZE != 0 which implies that
+            // the current processor and OS supports writeback to memory.
             r.register2("writeback0", Receiver.class, long.class, new CacheWritebackPlugin(false));
             r.register1("writebackPreSync0", Receiver.class, new CacheWritebackPlugin(true));
             r.register1("writebackPostSync0", Receiver.class, new CacheWritebackPlugin(false));

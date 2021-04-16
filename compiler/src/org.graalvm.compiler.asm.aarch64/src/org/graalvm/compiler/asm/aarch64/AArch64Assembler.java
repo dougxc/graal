@@ -819,18 +819,6 @@ public abstract class AArch64Assembler extends Assembler {
         return ((AArch64) target.arch).getFeatures().contains(feature);
     }
 
-    /**
-     * Determines if the CPU feature denoted by {@code name} is supported. This name based look up
-     * is for features only available in later JVMCI releases.
-     */
-    public final boolean supportsCPUFeature(String name) {
-        try {
-            return supports(CPUFeature.valueOf(name));
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
     public boolean isFlagSet(Flag flag) {
         return ((AArch64) target.arch).getFlags().contains(flag);
     }

@@ -45,7 +45,6 @@ public final class AMD64CacheWritebackSyncOp extends AMD64LIRInstruction {
 
     @Override
     public void emitCode(CompilationResultBuilder crb, AMD64MacroAssembler masm) {
-        assert masm.supportsCPUFeature("FLUSH");
         boolean optimized = masm.supportsCPUFeature("FLUSHOPT");
         boolean noEvict = masm.supportsCPUFeature("CLWB");
 

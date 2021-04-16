@@ -2228,7 +2228,6 @@ public class AArch64MacroAssembler extends AArch64Assembler {
     }
 
     public void cache_wb(AArch64Address line) {
-        assert supportsCPUFeature("DCPOP");
         assert line.getAddressingMode() == AddressingMode.REGISTER_OFFSET : line;
         assert line.getOffset() == Register.None : line;
         assert line.getImmediate() == 0 : line;

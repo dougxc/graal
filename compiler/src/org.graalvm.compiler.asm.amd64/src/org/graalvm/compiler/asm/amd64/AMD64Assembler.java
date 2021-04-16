@@ -4085,7 +4085,6 @@ public class AMD64Assembler extends AMD64BaseAssembler {
     }
 
     public void clflush(AMD64Address adr) {
-        assert supportsCPUFeature("FLUSH");
         prefix(adr);
         // opcode family is 0x0F 0xAE
         emitByte(0x0f);
